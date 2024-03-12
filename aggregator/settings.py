@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-vn$9#%fg76j@uaom)vo=gb__k5yn=(ur6wd!rpbszlsm+d1@ho
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['aggregator-django.onrender.com', 'localhost', '0.0.0.0']
 
 
 # Application definition
