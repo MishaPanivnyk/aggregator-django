@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blogs',
     'universities',
+    'tinymce',
     'rest_framework'
 ]
 
@@ -53,6 +54,13 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'aggregator.urls'
+
+TINYMCE_DEFAULT_CONFIG = {
+	'plugins': 'paste',
+	'paste_remove_styles': 'true',
+	'paste_remove_styles_if_webkit': 'true',
+	'paste_strip_class_attributes': 'all',
+}
 
 TEMPLATES = [
     {

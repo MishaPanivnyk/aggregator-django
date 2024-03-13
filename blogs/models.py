@@ -1,10 +1,10 @@
 from django.db import models
-
+from tinymce.models import HTMLField
 # Create your models here.
 
 class Blog(models.Model):
     title = models.CharField(max_length=255)
-    content = models.TextField()
+    content = HTMLField()
     author = models.CharField(max_length=255)
     imageUrl = models.ImageField(upload_to='images/', null=True, blank=True)
     category = models.CharField(max_length=255)
