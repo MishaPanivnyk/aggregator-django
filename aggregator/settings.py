@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'universities',
     'tinymce',
     'rest_framework',
-    'corsheaders,'
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
