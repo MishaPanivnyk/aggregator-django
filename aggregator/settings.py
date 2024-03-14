@@ -27,7 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['aggregator-django.onrender.com', 'localhost', '0.0.0.0']
 
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,11 +41,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blogs',
-    'universities',
     'tinymce',
     'rest_framework',
-    'corsheaders,'
+    'rest_framework.authtoken',
+    'corsheaders',
+    'accounts'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -56,6 +66,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'aggregator.urls'
+
+APPEND_SLASH=False
 
 TINYMCE_DEFAULT_CONFIG = {
 	'plugins': 'paste',
