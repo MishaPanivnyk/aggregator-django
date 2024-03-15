@@ -67,7 +67,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'aggregator.urls'
 
-APPEND_SLASH=False
+TOKEN_EXPIRE_SECONDS = 3600
 
 TINYMCE_DEFAULT_CONFIG = {
 	'plugins': 'paste',

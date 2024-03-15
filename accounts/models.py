@@ -5,8 +5,6 @@ from django.db import models
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
-
-    # Add custom fields here, if needed
-
+    imageUrl = models.ImageField(default="images/defaultAvatar.png" , upload_to="images/")
     def __str__(self):
         return self.username
