@@ -13,6 +13,9 @@ from pathlib import Path
 
 import dj_database_url
 import environ
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 env = environ.Env()
 environ.Env.read_env()
@@ -51,7 +54,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'accounts'
+    'accounts',
+    'cloudinary'
 ]
 
 REST_FRAMEWORK = {
@@ -131,6 +135,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+cloudinary.config(
+    cloud_name = env('CLOUDINARY_CLOUD_NAME'),
+    api_key = env('CLOUDINARY_API_KEY'),
+    api_secret = env('CLOUDINARY_API_SECRET')
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
