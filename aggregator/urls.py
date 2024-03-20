@@ -19,12 +19,10 @@ from django.urls import include, path
 from django.conf.urls.static import static
 from django.conf import settings
 
-from blogs.views import BlogAPIView
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('blogs/', BlogAPIView.as_view()),
     path('api/', include('accounts.urls')),
+    path('', include('blogs.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
