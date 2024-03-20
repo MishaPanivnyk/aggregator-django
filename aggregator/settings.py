@@ -39,7 +39,7 @@ ALLOWED_HOSTS = ['aggregator-django.onrender.com', 'localhost', '0.0.0.0']
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://aggregator-django.onrender.com",
+    "https://aggregator-django.onrender.com",
     "http://localhost:4000",
 ]
 CORS_ALLOW_CREDENTIALS = True
