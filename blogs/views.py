@@ -2,15 +2,18 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from .models import Blog
 from .serializers import BlogsSerializer
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
 @api_view(['GET'])
 def blogs(request):
-    queryset = Blog.objects.all()
-    serializer = BlogsSerializer(queryset, many=True)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        queryset = Blog.objects.all()
+        serializer = BlogsSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -18,3 +21,22 @@ def blog_detail(request, pk):
     blog = get_object_or_404(Blog, pk=pk)
     serializer = BlogsSerializer(blog)
     return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+def blog_delete(request, pk):
+    blog = get_object_or_404(Blog, pk=pk)
+    if request.method == 'DELETE':
+        blog.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def blog_create(request):
+    if request.method == 'POST':
+        serializer = BlogsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
