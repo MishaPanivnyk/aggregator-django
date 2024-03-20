@@ -35,7 +35,10 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['aggregator-django.onrender.com', 'localhost', '0.0.0.0']
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://mishapanivnyk.github.io/aggregator/"
+]
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 CORS_ALLOW_ALL_ORIGINS = True
