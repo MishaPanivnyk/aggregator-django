@@ -37,7 +37,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['aggregator-django.onrender.com', 'localhost', '0.0.0.0']
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://mishapanivnyk.github.io/aggregator/"
+    "https://mishapanivnyk.github.io"
 ]
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'accounts',
+    'universities',
     'cloudinary'
 ]
 
