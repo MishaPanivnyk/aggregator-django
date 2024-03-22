@@ -47,7 +47,6 @@ def user_login(request):
 def user_logout(request):
     if request.method == 'POST':
         try:
-            # Delete the user's token to logout
             request.user.auth_token.delete()
             return Response({'message': 'Successfully logged out.'}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -63,3 +62,21 @@ def user_profile(request):
         'imageUrl': user.imageUrl.url
     }
     return Response(data, status=status.HTTP_200_OK)
+
+import cloudinary.uploader
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def user_update_profile(request):
+    user = request.user
+    serializer = UserSerializer(user, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        image = request.FILES.get('imageUrl')  # Access the uploaded image
+        if image:
+            uploaded_image = cloudinary.uploader.upload(image)  # Upload to Cloudinary
+            serializer.validated_data['imageUrl'] = uploaded_image['secure_url']  # Update URL
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

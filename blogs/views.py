@@ -31,12 +31,19 @@ def blog_delete(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+import cloudinary.uploader  # Import the cloudinary module
+
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def blog_create(request):
     if request.method == 'POST':
         serializer = BlogsSerializer(data=request.data)
         if serializer.is_valid():
+            image = request.FILES.get('imageUrl')  # Access the uploaded image
+            if image:
+                uploaded_image = cloudinary.uploader.upload(image)  # Upload to Cloudinary
+                print(uploaded_image['url'])
+                serializer.validated_data['imageUrl'] = uploaded_image['secure_url'][50:]  # Update URL
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
