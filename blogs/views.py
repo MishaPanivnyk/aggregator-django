@@ -22,7 +22,7 @@ def blog_detail(request, pk):
     blog = get_object_or_404(Blog, pk=pk)
     serializer = BlogsSerializer(blog)
     response = Response(serializer.data)
-    response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Origin'] = 'https://mishapanivnyk.github.io'
     return response
 
 
