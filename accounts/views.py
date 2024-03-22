@@ -59,7 +59,8 @@ def user_profile(request):
     data = {
         'username': user.username,
         'email': user.email,
-        'imageUrl': user.imageUrl.url
+        'imageUrl': user.imageUrl.url,
+        'isCreator': user.isCreator,
     }
     return Response(data, status=status.HTTP_200_OK)
 
