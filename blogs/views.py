@@ -13,16 +13,17 @@ def blogs(request):
     if request.method == 'GET':
         queryset = Blog.objects.all()
         serializer = BlogsSerializer(queryset, many=True)
-        response = Response(serializer.data)
-        response['Access-Control-Allow-Origin'] = '*'
-        return response
+        return Response(serializer.data)
+      
 
 
 @api_view(['GET'])
 def blog_detail(request, pk):
     blog = get_object_or_404(Blog, pk=pk)
     serializer = BlogsSerializer(blog)
-    return Response(serializer.data)
+    response = Response(serializer.data)
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
 
 
 @api_view(['DELETE'])
