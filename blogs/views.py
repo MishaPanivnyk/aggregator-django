@@ -13,7 +13,9 @@ def blogs(request):
     if request.method == 'GET':
         queryset = Blog.objects.all()
         serializer = BlogsSerializer(queryset, many=True)
-        return Response(serializer.data)
+        response = Response(serializer.data)
+        response['Access-Control-Allow-Origin'] = '*'
+        return response
 
 
 @api_view(['GET'])
