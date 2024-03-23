@@ -36,10 +36,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['aggregator-django.onrender.com', 'localhost', '0.0.0.0']
 
-CORS_ALLOW_ALL_ORIGIN = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://mishapanivnyk.github.io"
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+CORS_ALLOW_ALL_ORIGINS = True
+# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
