@@ -42,7 +42,6 @@ CORS_ALLOWED_ORIGINS = [
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
 # Application definition
 
 INSTALLED_APPS = [
