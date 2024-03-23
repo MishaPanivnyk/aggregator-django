@@ -35,14 +35,11 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['aggregator-django.onrender.com', 'localhost', '0.0.0.0']
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://mishapanivnyk.github.io"
-]
+
+CORS_ALLOW_ALL_ORIGIN = True
+
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-CORS_ALLOW_ALL_ORIGINS = True
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -68,6 +65,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -75,7 +73,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'aggregator.urls'
