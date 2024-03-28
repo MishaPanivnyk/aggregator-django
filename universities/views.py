@@ -24,3 +24,10 @@ def university_create(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+    
+@api_view(['GET'])
+def university_detail(request, pk):
+    university = get_object_or_404(University, pk=pk)
+    serializer = UniversitySerializer(university)
+    response = Response(serializer.data)
+    return response
