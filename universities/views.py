@@ -26,8 +26,22 @@ def university_create(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     
 @api_view(['GET'])
+def university_search(request):
+    if request.method == 'GET':
+        query_params = request.query_params
+        search_query = query_params.get('query', None)
+        
+        if search_query is not None:
+            queryset = University.objects.filter(universityName__icontains=search_query)
+            serializer = UniversitySerializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({"error": "Query parameter 'query' is required"}, status=status.HTTP_400_BAD_REQUEST)
+      
+@api_view(['GET'])
 def university_detail(request, pk):
     university = get_object_or_404(University, pk=pk)
     serializer = UniversitySerializer(university)
     response = Response(serializer.data)
     return response
+
