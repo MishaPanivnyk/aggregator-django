@@ -18,29 +18,30 @@ def user_register(request):
             return Response({'token': token.key}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 @api_view(['POST'])
 def user_login(request):
     if request.method == 'POST':
         username = request.data.get('username')
         password = request.data.get('password')
 
-        user = None
-        if '@' in username:
-            try:
-                user = CustomUser.objects.get(email=username)
-            except ObjectDoesNotExist:
-                pass
+        if not username or not password:
+            return Response({'error': 'Both username and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        user = authenticate(username=username, password=password)
         if not user:
-            user = authenticate(username=username, password=password)
+            if '@' in username:
+                try:
+                    user = CustomUser.objects.get(email=username)
+                    if not user.check_password(password):
+                        user = None
+                except ObjectDoesNotExist:
+                    pass 
 
         if user:
             token, _ = Token.objects.get_or_create(user=user)
             return Response({'token': token.key}, status=status.HTTP_200_OK)
 
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-    
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)    
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
