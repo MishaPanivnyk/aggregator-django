@@ -83,3 +83,9 @@ def user_update_profile(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET'])
+def users(request):
+    if request.method == 'GET':
+        queryset = CustomUser.objects.all()
+        serializer = UserSerializer(queryset, many=True)
+        return Response(serializer.data)

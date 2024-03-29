@@ -13,7 +13,6 @@ class University(models.Model):
     desc = models.TextField(blank=True)
     accreditationLevel = models.CharField(max_length=50, blank=True)
     rating = models.FloatField(blank=True)
-    reviews = models.JSONField(blank=True)
     type = models.CharField(max_length=100, blank=True)
     features = models.TextField(blank=True)
     remoteEducation = models.CharField(blank=True)
