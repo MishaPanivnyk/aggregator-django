@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes 
@@ -7,6 +8,7 @@ from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated
 from .models import CustomUser
+import cloudinary.uploader
 
 @api_view(['POST'])
 def user_register(request):
@@ -67,7 +69,12 @@ def user_profile(request):
     }
     return Response(data, status=status.HTTP_200_OK)
 
-import cloudinary.uploader
+@api_view(['GET'])
+def users_id(request, pk):
+    user = get_object_or_404(CustomUser, pk=pk)
+    serializer = UserSerializer(user)
+    response = Response(serializer.data)
+    return response
 
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
