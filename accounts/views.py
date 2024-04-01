@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes 
-from .serializers import UserSerializer
+from .serializers import UserSerializer, PatchUserSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
@@ -80,13 +80,13 @@ def users_id(request, pk):
 @permission_classes([IsAuthenticated])
 def user_update_profile(request):
     user = request.user
-    serializer = UserSerializer(user, data=request.data, partial=True)
+    serializer = PatchUserSerializer(user, data=request.data, partial=True)
 
     if serializer.is_valid():
         image = request.FILES.get('imageUrl')  # Access the uploaded image
         if image:
             uploaded_image = cloudinary.uploader.upload(image)  # Upload to Cloudinary
-            serializer.validated_data['imageUrl'] = uploaded_image['secure_url']  # Update URL
+            serializer.validated_data['imageUrl'] = uploaded_image['secure_url'][50:]  # Update URL
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
