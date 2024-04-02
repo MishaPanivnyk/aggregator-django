@@ -12,6 +12,7 @@ class University(models.Model):
     location = models.CharField(max_length=200, blank=True)
     desc = models.TextField(blank=True)
     accreditationLevel = models.CharField(max_length=50, blank=True)
+    reviewCount = models.IntegerField(blank=True, default=0)
     rating = models.FloatField(blank=True)
     type = models.CharField(max_length=100, blank=True)
     features = models.TextField(blank=True)

@@ -5,6 +5,13 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .models import Review
 from .serializers import ReviewSerializer
+from universities.models import University
+
+def updateInfo(University, Rating):
+    University.reviewCount += 1
+    University.rating = (University.rating * (University.reviewCount - 1) + Rating ) / University.reviewCount
+    University.save()
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -12,8 +19,11 @@ def create_review(request):
     serializer = ReviewSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(user=request.user)
+        University = serializer.validated_data['university']
+        updateInfo(University, serializer.validated_data['rating'])
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET'])
 def all_reviews(request):
