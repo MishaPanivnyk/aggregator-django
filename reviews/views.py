@@ -37,6 +37,15 @@ def university_reviews(request, university_id):
     serializer = ReviewSerializer(reviews, many=True)
     return Response(serializer.data)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_reviews(request, user_id):
+    reviews = Review.objects.filter(user_id=user_id)
+    serializer = ReviewSerializer(reviews, many=True)
+    return Response(serializer.data)
+
+
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_review(request, review_id):
