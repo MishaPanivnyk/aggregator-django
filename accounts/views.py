@@ -60,6 +60,7 @@ def user_logout(request):
 def user_profile(request):
     user = request.user
     data = {
+        'id': user.id,
         'username': user.username,
         'email': user.email,
         'imageUrl': user.imageUrl.url,
