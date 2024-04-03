@@ -24,3 +24,17 @@ class University(models.Model):
 
     def __str__(self):
         return self.universityName
+    
+class TopUniversity(models.Model):
+    year = models.IntegerField()
+    id=models.CharField(primary_key=True, default=generate_uuid, editable=False)
+    place = models.IntegerField()
+    universityName = models.CharField()
+    img = models.TextField(max_length=500)
+    applicationsNumber = models.IntegerField()
+    budgetApplications = models.IntegerField()
+    averageCompetitveScore = models.FloatField()
+    year = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.place}) {self.universityName} '
