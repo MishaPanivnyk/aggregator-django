@@ -9,7 +9,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'password', 'imageUrl', 'last_name', 'first_name', 'compareUniversities']
         extra_kwargs = {
             'password': {'write_only': True}
-            
         }
 
     def create(self, validated_data):

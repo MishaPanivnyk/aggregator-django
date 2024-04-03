@@ -32,6 +32,7 @@ def user_login(request):
         user = authenticate(username=username, password=password)
         if not user:
             if '@' in username:
+                username = username.lower()
                 try:
                     user = CustomUser.objects.get(email=username)
                     if not user.check_password(password):
