@@ -24,11 +24,12 @@ class UserSerializer(serializers.ModelSerializer):
 class PatchUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'password', 'imageUrl', 'last_name', 'first_name']
+        fields = ['id', 'username', 'email', 'password', 'imageUrl', 'last_name', 'first_name', 'isCreator']
         extra_kwargs = {
             'password': {'write_only': True},
             'username': {'required': False},
             'email': {'required': False},
             'last_name': {'required': False},
             'first_name': {'required': False},
+            'isCreator': {'required': False},
         }
