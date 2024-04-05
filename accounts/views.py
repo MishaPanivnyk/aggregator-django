@@ -99,3 +99,43 @@ def users(request):
         queryset = CustomUser.objects.all()
         serializer = UserSerializer(queryset, many=True)
         return Response(serializer.data)
+    
+# accounts/views.py
+
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth.models import User
+
+@api_view(['POST'])
+def forgot_password(request):
+    email = request.data.get('email')
+    if email:
+        try:
+            user = CustomUser.objects.get(email=email)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'No user found with this email address.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Generate token
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+        # Create reset password link
+        reset_password_link = f'http://localhost:4000/reset-password/{uid}/{token}/'
+
+        # Send reset password email
+        subject = 'Password Reset Request'
+        message = render_to_string('email/reset_password_email.html', {
+            'user': user,
+            'reset_password_link': reset_password_link,
+        })
+        send_mail(subject, message, 'sanuaburdun15@gmail.com', [email])
+
+        return Response({'success': 'Reset password instructions have been sent to your email.'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)

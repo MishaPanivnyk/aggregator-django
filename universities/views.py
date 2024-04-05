@@ -100,7 +100,7 @@ def remove_from_compare(request):
     user = request.user
 
     for university in user.compareUniversities:
-        if university['id'] == university_id:  # Access ID using dictionary key
+        if university['id'] == university_id: 
             user.compareUniversities.remove(university)
             user.save()
             return Response({'success': "University removed from your comparison list"})
