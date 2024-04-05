@@ -36,7 +36,7 @@ def user_login(request):
                 try:
                     user = CustomUser.objects.get(email=username)
                     if not user.check_password(password):
-                        user = None
+                        user = None 
                 except ObjectDoesNotExist:
                     pass 
 

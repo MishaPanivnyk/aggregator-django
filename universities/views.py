@@ -5,6 +5,8 @@ from .serializers import UniversitySerializer, TopUniversitySerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from accounts.models import CustomUser
+from accounts.serializers import UserSerializer
 
 # Create your views here.
 
@@ -62,3 +64,45 @@ def university_create(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_to_compare(request):
+    if request.method == 'POST':
+        user = request.user
+        required_fields = {'university_id'}
+        missing_fields = required_fields - set(request.data.keys())
+        university_id = request.data['university_id']
+        if len(user.compareUniversities) >= 3:
+            return Response({'error': "Number of compared universities is out of range"}, status=status.HTTP_409_CONFLICT)
+        if missing_fields:
+            return Response({'error': f"Missing required fields: {', '.join(missing_fields)}"}, status=status.HTTP_400_BAD_REQUEST)
+        if university_id in [uni['id'] for uni in user.compareUniversities]:
+            return Response({'error': "University already in your comparison list"}, status=status.HTTP_409_CONFLICT)
+        
+
+        try:
+            university = University.objects.get(pk=university_id)
+        except University.DoesNotExist:
+            return Response({'error': "University not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = UniversitySerializer(university)
+        user = request.user
+        user.compareUniversities.append(serializer.data)
+        user.save()
+
+            
+        return Response(serializer.data)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def remove_from_compare(request):
+    university_id = request.data['university_id']
+    user = request.user
+
+    for university in user.compareUniversities:
+        if university['id'] == university_id:  # Access ID using dictionary key
+            user.compareUniversities.remove(university)
+            user.save()
+            return Response({'success': "University removed from your comparison list"})
+
+    return Response({'error': "University not found in your comparison list"}, status=status.HTTP_404_NOT_FOUND)
