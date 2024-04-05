@@ -106,3 +106,9 @@ def remove_from_compare(request):
             return Response({'success': "University removed from your comparison list"})
 
     return Response({'error': "University not found in your comparison list"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def all_compared_universities(request):
+    user = request.user
+    return Response(user.compareUniversities)
