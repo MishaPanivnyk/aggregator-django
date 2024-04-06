@@ -7,4 +7,5 @@ urlpatterns = [
     path('review/<int:review_id>/delete/', delete_review, name='delete_review'),
     path('reviews/', all_reviews, name='all_reviews'),
     path('api/profile/<int:user_id>/reviews/', user_reviews, name='user_reviews'),
+    
 ]

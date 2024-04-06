@@ -58,5 +58,4 @@ def delete_review(request, review_id):
         return Response({"error": "You don't have permission to delete this review."}, status=status.HTTP_403_FORBIDDEN)
 
     review.delete()
-    University.reviewCount -= 1
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response({"message": "Review was succesfully deleted"}, status=status.HTTP_200_OK)

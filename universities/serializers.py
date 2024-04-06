@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import University
+from .models import University, TopUniversity
 
 class UniversitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,5 +8,5 @@ class UniversitySerializer(serializers.ModelSerializer):
 
 class TopUniversitySerializer(serializers.ModelSerializer):
     class Meta:
-        model = University
+        model = TopUniversity
         fields = '__all__'
