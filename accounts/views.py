@@ -1,14 +1,23 @@
+import os
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes 
-from .serializers import UserSerializer, PatchUserSerializer
+from .serializers import UserSerializer, PatchUserSerializer, PasswordResetSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated
 from .models import CustomUser
 import cloudinary.uploader
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_decode
+from dotenv import load_dotenv
+load_dotenv()
 
 @api_view(['POST'])
 def user_register(request):
@@ -100,42 +109,44 @@ def users(request):
         serializer = UserSerializer(queryset, many=True)
         return Response(serializer.data)
     
-# accounts/views.py
-
-from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from django.contrib.auth.models import User
-
 @api_view(['POST'])
-def forgot_password(request):
-    email = request.data.get('email')
-    if email:
+def send_password_reset_email(request):
+    if request.method == 'POST':
+        email = request.data.get('email')
         try:
             user = CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist:
-            return Response({'error': 'No user found with this email address.'}, status=status.HTTP_404_NOT_FOUND)
-
-        # Generate token
+            return JsonResponse({'error': 'User with '}, status=400)
+        
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
+        baseUrl = str(os.getenv('BASE_URL'))
 
-        # Create reset password link
-        reset_password_link = f'http://localhost:4000/reset-password/{uid}/{token}/'
+        reset_link = f"{baseUrl}/api/reset-password/{uid}/{token}/"
+        send_mail(
+            "Скидання пароля",
+            f"Доброго дня,\n\nМи отримали запит на скидання вашого пароля. Якщо це не ви, проігноруйте цей лист.\n\nЩоб скинути пароль, перейдіть за наступним посиланням:\n{reset_link}\n\nЦе посилання дійсне протягом наступних 24 годин.\n\nЯкщо у вас виникли проблеми або питання, будь ласка, зверніться до нас.\n\nЗ найкращими побажаннями,\nVDOMA",
+            str(os.getenv('EMAIL_HOST_USER')),
+            [email],
+            fail_silently=False,
+        )
+        return Response({'message': 'Email sent successfully'}, status=status.HTTP_200_OK)
+    
+@api_view(['POST'])
+def reset_password(request, uidb64, token):
+  try:
+    uid = force_bytes(urlsafe_base64_decode(uidb64))
+    user = CustomUser.objects.get(pk=uid)
+  except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+    user = None
 
-        # Send reset password email
-        subject = 'Password Reset Request'
-        message = render_to_string('email/reset_password_email.html', {
-            'user': user,
-            'reset_password_link': reset_password_link,
-        })
-        send_mail(subject, message, 'sanuaburdun15@gmail.com', [email])
-
-        return Response({'success': 'Reset password instructions have been sent to your email.'}, status=status.HTTP_200_OK)
+  if user is not None and default_token_generator.check_token(user, token):
+    serializer = PasswordResetSerializer(data=request.data)
+    if serializer.is_valid():
+      user.set_password(serializer.validated_data['new_password'])
+      user.save()
+      return Response({'message': 'Password reset successful'}, status=status.HTTP_200_OK)
     else:
-        return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  else:
+    return Response({'error': 'Invalid reset link'}, status=status.HTTP_401_UNAUTHORIZED)

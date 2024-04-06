@@ -32,3 +32,6 @@ class PatchUserSerializer(serializers.ModelSerializer):
             'first_name': {'required': False},
             'isCreator': {'required': False},
         }
+
+class PasswordResetSerializer(serializers.Serializer):
+    new_password = serializers.CharField(max_length=128, write_only=True)

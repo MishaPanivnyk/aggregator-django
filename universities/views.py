@@ -5,8 +5,6 @@ from .serializers import UniversitySerializer, TopUniversitySerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from accounts.models import CustomUser
-from accounts.serializers import UserSerializer
 
 # Create your views here.
 
@@ -103,7 +101,7 @@ def remove_from_compare(request):
         if university['id'] == university_id: 
             user.compareUniversities.remove(university)
             user.save()
-            return Response({'success': "University removed from your comparison list"})
+            return Response({'success': "University removed from your comparison list"}, status=status.HTTP_200_OK)
 
     return Response({'error': "University not found in your comparison list"}, status=status.HTTP_404_NOT_FOUND)
 
