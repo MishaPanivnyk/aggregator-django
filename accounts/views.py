@@ -134,19 +134,19 @@ def send_password_reset_email(request):
     
 @api_view(['POST'])
 def reset_password(request, uidb64, token):
-  try:
-    uid = force_bytes(urlsafe_base64_decode(uidb64))
-    user = CustomUser.objects.get(pk=uid)
-  except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
-    user = None
+    try:
+        uid = force_bytes(urlsafe_base64_decode(uidb64))
+        user = CustomUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+        user = None
 
-  if user is not None and default_token_generator.check_token(user, token):
-    serializer = PasswordResetSerializer(data=request.data)
-    if serializer.is_valid():
-      user.set_password(serializer.validated_data['new_password'])
-      user.save()
-      return Response({'message': 'Password reset successful'}, status=status.HTTP_200_OK)
+    if user is not None and default_token_generator.check_token(user, token):
+        serializer = PasswordResetSerializer(data=request.data)
+        if serializer.is_valid():
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            return Response({'message': 'Password reset successful'}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     else:
-      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-  else:
-    return Response({'error': 'Invalid reset link'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'error': 'Invalid reset link'}, status=status.HTTP_401_UNAUTHORIZED)

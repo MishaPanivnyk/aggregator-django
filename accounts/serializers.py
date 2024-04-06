@@ -1,7 +1,9 @@
 # accounts/serializers.py
 
+import re
 from rest_framework import serializers
 from .models import CustomUser
+from django.contrib.auth.password_validation import validate_password
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,4 +36,12 @@ class PatchUserSerializer(serializers.ModelSerializer):
         }
 
 class PasswordResetSerializer(serializers.Serializer):
-    new_password = serializers.CharField(max_length=128, write_only=True)
+    new_password = serializers.CharField(max_length=25, write_only=True)
+
+    def validate_new_password(self, value):
+        if len(value) < 8:
+            raise serializers.ValidationError("Password must be at least 8 characters long.")
+        if not re.match(r'^[A-Za-z0-9!@#$%^&*()_+=-]+$', value):
+            raise serializers.ValidationError("Password can only contain Latin letters, numbers, and some special characters.")
+        validate_password(value)
+        return value
