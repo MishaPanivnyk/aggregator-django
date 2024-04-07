@@ -13,9 +13,14 @@ def updateInfo(University, Rating):
     University.save()
 
 
-def minusReview(University):
-    University.reviewCount -= 1
-    University.save()
+def minusReview(University, Rating):
+    if University.reviewCount > 0:
+        University.reviewCount -= 1
+        if University.reviewCount == 0:
+            University.rating = 0
+        else:
+            University.rating = (University.rating * (University.reviewCount + 1) - Rating) / University.reviewCount
+        University.save()
 
 
 @api_view(['POST'])
@@ -63,6 +68,7 @@ def delete_review(request, review_id):
         return Response({"error": "You don't have permission to delete this review."}, status=status.HTTP_403_FORBIDDEN)
 
     university = review.university
+    rating = review.rating
     review.delete()
-    minusReview(university)  # Вызываем функцию для обновления информации об университете
+    minusReview(university, rating)  # Вызываем функцию для обновления информации об университете
     return Response({"message": "Review was successfully deleted"}, status=status.HTTP_200_OK)
