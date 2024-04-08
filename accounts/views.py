@@ -122,7 +122,7 @@ def send_password_reset_email(request):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         baseUrl = str(os.getenv('BASE_URL'))
 
-        reset_link = f"{baseUrl}/api/reset-password/{uid}/{token}/"
+        reset_link = f"{baseUrl}/reset-password/{uid}/{token}/"
         send_mail(
             "Скидання пароля",
             f"Доброго дня,\n\nМи отримали запит на скидання вашого пароля. Якщо це не ви, проігноруйте цей лист.\n\nЩоб скинути пароль, перейдіть за наступним посиланням:\n{reset_link}\n\nЦе посилання дійсне протягом наступних 24 годин.\n\nЯкщо у вас виникли проблеми або питання, будь ласка, зверніться до нас.\n\nЗ найкращими побажаннями,\nVDOMA",
