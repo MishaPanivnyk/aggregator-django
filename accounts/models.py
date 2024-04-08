@@ -8,6 +8,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     imageUrl = CloudinaryField("image", blank=True)
     isCreator = models.BooleanField(default=False, blank=True)
+    isModerator = models.BooleanField(default=False, blank=True)
     compareUniversities = models.JSONField(default=list, blank=True)
     def __str__(self):
         return self.username

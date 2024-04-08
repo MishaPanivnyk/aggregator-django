@@ -63,12 +63,14 @@ def delete_review(request, review_id):
         review = Review.objects.get(pk=review_id)
     except Review.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if review.user != request.user:
+    
+    if review.user == request.user or request.user.isModerator:
+        university = review.university
+        rating = review.rating
+        review.delete()
+        minusReview(university, rating) 
+    else:
         return Response({"error": "You don't have permission to delete this review."}, status=status.HTTP_403_FORBIDDEN)
-
-    university = review.university
-    rating = review.rating
-    review.delete()
-    minusReview(university, rating)  # Вызываем функцию для обновления информации об университете
+    
     return Response({"message": "Review was successfully deleted"}, status=status.HTTP_200_OK)
+

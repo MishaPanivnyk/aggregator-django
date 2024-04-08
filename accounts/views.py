@@ -75,6 +75,7 @@ def user_profile(request):
         'email': user.email,
         'imageUrl': user.imageUrl.url,
         'isCreator': user.isCreator,
+        'isModerator': user.isModerator,
         'first_name': user.first_name,
         'last_name': user.last_name,
     }
