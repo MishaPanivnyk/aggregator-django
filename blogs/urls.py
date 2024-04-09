@@ -1,10 +1,9 @@
 from django.urls import path
-from .views import blog_detail, blog_delete, blogs, blog_create
+from .views import BlogDetailView, BlogDeleteView, BlogsView, BlogCreateView
 
 urlpatterns = [
-    path('blogs/', blogs, name='register'),    
-    path('blogs/create/', blog_create, name='blog-create'),
-    path('blogs/<str:pk>/', blog_detail, name='blog-detail'),
-    path('blogs/<str:pk>/delete/', blog_delete, name='blog-delete'),
-
+    path('blogs/', BlogsView.as_view(), name='register'),    
+    path('blogs/create/', BlogCreateView.as_view(), name='blog-create'),
+    path('blogs/<str:pk>/', BlogDetailView.as_view(), name='blog-detail'),
+    path('blogs/<str:pk>/delete/', BlogDeleteView.as_view(), name='blog-delete'),
 ] 

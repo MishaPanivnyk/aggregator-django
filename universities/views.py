@@ -5,32 +5,31 @@ from .serializers import UniversitySerializer, TopUniversitySerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 
 # Create your views here.
 
-@api_view(['GET'])
-def universities(request):
-    if request.method == 'GET':
+class UniversityList(APIView):
+    def get(self, request):
         queryset = University.objects.all()
         serializer = UniversitySerializer(queryset, many=True)
         return Response(serializer.data)
     
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
-def university_create(request):
-    if request.method == 'POST':
+class UniversityCreate(APIView):
+    permission_classes = [IsAuthenticated]  # Require authentication for this view
+
+    def post(self, request):
         serializer = UniversitySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-@api_view(['GET'])
-def university_search(request):
-    if request.method == 'GET':
+class UniversitySearch(APIView):
+    def get(self, request):
         query_params = request.query_params
         search_query = query_params.get('query', None)
-        
+
         if search_query is not None:
             queryset = University.objects.filter(universityName__icontains=search_query)
             serializer = UniversitySerializer(queryset, many=True)
@@ -38,75 +37,71 @@ def university_search(request):
         else:
             return Response({"error": "Query parameter 'query' is required"}, status=status.HTTP_400_BAD_REQUEST)
       
-@api_view(['GET'])
-def university_detail(request, pk):
-    university = get_object_or_404(University, pk=pk)
-    serializer = UniversitySerializer(university)
-    response = Response(serializer.data)
-    return response
+class UniversityDetail(APIView):
+    def get(self, request, pk):
+        try:
+            university = University.objects.get(pk=pk)
+        except University.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = UniversitySerializer(university)
+        return Response(serializer.data)
 
-
-@api_view(['GET'])
-def topUniversities(request):
-    if request.method == 'GET':
+class TopUniversityList(APIView):
+    def get(self, request):
         queryset = TopUniversity.objects.all()
         serializer = TopUniversitySerializer(queryset, many=True)
         return Response(serializer.data)
 
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
-def university_create(request):
-    if request.method == 'POST':
-        serializer = TopUniversitySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+class AddToCompareView(APIView):
+    permission_classes = [IsAuthenticated]
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def add_to_compare(request):
-    if request.method == 'POST':
-        user = request.user
+    def post(self, request):
         required_fields = {'university_id'}
         missing_fields = required_fields - set(request.data.keys())
-        university_id = request.data['university_id']
-        if len(user.compareUniversities) >= 3:
-            return Response({'error': "Number of compared universities is out of range"}, status=status.HTTP_409_CONFLICT)
         if missing_fields:
             return Response({'error': f"Missing required fields: {', '.join(missing_fields)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        university_id = request.data['university_id']
+        user = request.user
+
+        if len(user.compareUniversities) >= 3:
+            return Response({'error': 'Number of compared universities is out of range'}, status=status.HTTP_409_CONFLICT)
+
         if university_id in [uni['id'] for uni in user.compareUniversities]:
-            return Response({'error': "University already in your comparison list"}, status=status.HTTP_409_CONFLICT)
-        
+            return Response({'error': 'University already in your comparison list'}, status=status.HTTP_409_CONFLICT)
 
         try:
             university = University.objects.get(pk=university_id)
         except University.DoesNotExist:
-            return Response({'error': "University not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'University not found'}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = UniversitySerializer(university)
-        user = request.user
         user.compareUniversities.append(serializer.data)
         user.save()
-
-            
         return Response(serializer.data)
 
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def remove_from_compare(request):
-    university_id = request.data['university_id']
-    user = request.user
+class RemoveFromCompareView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    for university in user.compareUniversities:
-        if university['id'] == university_id: 
-            user.compareUniversities.remove(university)
-            user.save()
-            return Response({'success': "University removed from your comparison list"}, status=status.HTTP_200_OK)
+    def delete(self, request):
+        try:
+            university_id = request.data['university_id']
+        except KeyError:
+            return Response({'error': 'University ID is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response({'error': "University not found in your comparison list"}, status=status.HTTP_404_NOT_FOUND)
+        user = request.user
+        found = False
+        for university in user.compareUniversities:
+            if university['id'] == university_id:
+                user.compareUniversities.remove(university)
+                user.save()
+                found = True
+                return Response({'success': 'University removed from your comparison list'}, status=status.HTTP_200_OK)
+        if not found:
+            return Response({'error': 'University not found in your comparison list'}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def all_compared_universities(request):
-    user = request.user
-    return Response(user.compareUniversities)
+class AllComparedUniversitiesView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = request.user
+        return Response(user.compareUniversities)
