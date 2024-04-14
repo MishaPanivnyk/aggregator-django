@@ -101,7 +101,6 @@ class RemoveFromCompareView(APIView):
             return Response({'error': 'University not found in your comparison list'}, status=status.HTTP_404_NOT_FOUND)
 
 class AllComparedUniversitiesView(APIView):
-    permission_classes = [IsAuthenticated]
     def get(self, request):
         user = request.user
         return Response(user.compareUniversities)
