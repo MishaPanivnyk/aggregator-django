@@ -27,7 +27,7 @@ Market analysis has been conducted, identifying demand for such a service among 
 We believe that this project will provide users with necessary information and make the university selection process more transparent and convenient.
 
 ## Frontend Link
-[Link to the backend](https://github.com/mishapanivnyk/aggregator/)
+[Link to the frontend](https://github.com/mishapanivnyk/aggregator/)
 
 ## Website Link
 [Link to the website](https://mishapanivnyk.github.io/aggregator/)
